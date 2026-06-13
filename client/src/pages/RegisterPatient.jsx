@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { registerPatient, getPatients } from "../services/patientService";
+import { addToQueue } from "../services/queueService";
 
 function RegisterPatient() {
 const [formData, setFormData] = useState({
@@ -20,7 +21,15 @@ const handleChange = (e) => {
         [e.target.name]: e.target.value
     });
 };
+const handleAddToQueue = async (patientId) => {
+  try {
+    await addToQueue(patientId);
 
+    alert("Patient added to queue");
+  } catch (error) {
+    console.error(error);
+  }
+};
 const fetchPatients = async () => {
     try {
         const data = await getPatients();
@@ -157,6 +166,12 @@ return (
                     />
               
             </div>
+            <button
+                onClick={() => handleAddToQueue(patient._id)}
+                className="mt-4 w-full bg-green-600 text-white p-2 rounded-lg hover:bg-green-700"
+                >
+                Add To Queue
+                </button>
           </div>
         ))}
 
