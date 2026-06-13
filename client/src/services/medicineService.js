@@ -25,3 +25,11 @@ export const dispenseMedicine = async (
 
   return response.data;
 };
+
+export const deleteMedicine = async (id) => {
+  const response = await axios.delete(
+    `http://localhost:5000/api/medicines/${id}`
+  );
+
+  return response.data;
+};

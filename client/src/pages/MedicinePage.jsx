@@ -3,6 +3,7 @@ import {
   getMedicines,
   createMedicine,
   dispenseMedicine,
+  deleteMedicine
 } from "../services/medicineService";
 
 function MedicinePage() {
@@ -25,6 +26,18 @@ function MedicinePage() {
     await dispenseMedicine(id, 1);
 
     fetchMedicines();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+    const handleDeleteMedicine = async (id) => {
+  try {
+    await deleteMedicine(id);
+
+    fetchMedicines();
+
+    alert("Medicine deleted");
   } catch (error) {
     console.error(error);
   }
@@ -113,39 +126,52 @@ function MedicinePage() {
 
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {medicines.map((medicine) => (
-          <div
-            key={medicine._id}
-            className="bg-white p-5 rounded-xl shadow"
-            
-          >
-            <h2 className="text-xl font-bold">
-              {medicine.name}
-            </h2>
+  <div
+    key={medicine._id}
+    className="bg-white p-5 rounded-xl shadow"
+  >
+    <h2 className="text-xl font-bold">
+      {medicine.name}
+    </h2>
 
-            <p>Stock: {medicine.quantity}</p>
-            <p>Category: {medicine.category}</p>
+    <p>Stock: {medicine.quantity}</p>
+    <p>Category: {medicine.category}</p>
 
-            <p>
-              Expiry:
-              {" "}
-              {new Date(
-                medicine.expiryDate
-              ).toLocaleDateString()}
-            </p>
+    <p>
+      Expiry{" "}
+      {new Date(
+        medicine.expiryDate
+      ).toLocaleDateString()}
+    </p>
 
-            {medicine.quantity < 10 && (
-              <p className="text-red-600 font-bold">
-                Low Stock
-              </p>
-            )}
-              <button
-                onClick={() => handleDispense(medicine._id)}
-                className="mt-4 w-full bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
-                >
-                Dispense 1 Unit
-                </button>
-          </div>
-        ))}
+    {medicine.quantity < 10 && (
+      <p className="text-red-600 font-bold">
+        Low Stock
+      </p>
+    )}
+
+    <div className="mt-4 flex gap-2">
+      <button
+        onClick={() =>
+          handleDispense(medicine._id)
+        }
+        className="flex-1 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+      >
+        Dispense
+      </button>
+
+      <button
+        onClick={() =>
+          handleDeleteMedicine(medicine._id)
+        }
+        className="flex-1 bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+))}
+       
       </div>
     </div>
   );

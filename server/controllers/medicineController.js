@@ -49,8 +49,23 @@ const dispenseMedicine = async (req, res) => {
   }
 };
 
+const deleteMedicine = async (req, res) => {
+  try {
+    await Medicine.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Medicine deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   createMedicine,
   getMedicines,
     dispenseMedicine,
+    deleteMedicine
 };
