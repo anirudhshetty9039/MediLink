@@ -5,226 +5,163 @@ import { addToQueue } from "../services/queueService";
 import { getQueue } from "../services/queueService";
 
 function RegisterPatient() {
-const [formData, setFormData] = useState({
-name: "",
-age: "",
-gender: "",
-phone: "",
-village: ""
-});
+  const [formData, setFormData] = useState({
+    name: "",
+    age: "",
+    gender: "",
+    phone: "",
+    village: ""
+  });
 
 
-const [patients, setPatients] = useState([]);
-const [queuedPatients, setQueuedPatients] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [queuedPatients, setQueuedPatients] = useState([]);
 
 
-const handleChange = (e) => {
+  const handleChange = (e) => {
     setFormData({
-        ...formData,
-        [e.target.name]: e.target.value
+      ...formData,
+      [e.target.name]: e.target.value
     });
-};
-const handleAddToQueue = async (patientId) => {
-  try {
-    await addToQueue(patientId);
+  };
+  const handleAddToQueue = async (patientId) => {
+    try {
+      await addToQueue(patientId);
 
-    const queueData = await getQueue();
+      const queueData = await getQueue();
 
-    setQueuedPatients(
-      queueData.map((entry) => entry.patientId._id)
-    );
+      setQueuedPatients(
+        queueData.map((entry) => entry.patientId._id)
+      );
 
-    alert("Patient added to queue");
+      alert("Patient added to queue");
 
-  } catch (error) {
-    alert(
-      error.response?.data?.message ||
-      "Something went wrong"
-    );
-  }
-};
+    } catch (error) {
+      alert(
+        error.response?.data?.message ||
+        "Something went wrong"
+      );
+    }
+  };
 
-const handleDeletePatient = async (id) => {
-  try {
-    await deletePatient(id);
+  const handleDeletePatient = async (id) => {
+    try {
+      await deletePatient(id);
 
+      fetchPatients();
+
+      alert("Patient deleted");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchPatients = async () => {
+    try {
+      const data = await getPatients();
+      setPatients(data);
+
+      const queueData = await getQueue();
+
+      setQueuedPatients(
+        queueData.map((entry) => entry.patientId._id)
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
     fetchPatients();
+  }, []);
 
-    alert("Patient deleted");
-  } catch (error) {
-    console.error(error);
-  }
-};
-const fetchPatients = async () => {
-  try {
-    const data = await getPatients();
-    setPatients(data);
-
-    const queueData = await getQueue();
-
-    setQueuedPatients(
-      queueData.map((entry) => entry.patientId._id)
-    );
-
-  } catch (error) {
-    console.error(error);
-  }
-};
-
-useEffect(() => {
-    fetchPatients();
-}, []);
-
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-        await registerPatient(formData);
+      await registerPatient(formData);
 
-        alert("Patient Registered");
+      alert("Patient Registered");
 
-        fetchPatients();
+      fetchPatients();
 
-        setFormData({
-            name: "",
-            age: "",
-            gender: "",
-            phone: "",
-            village: ""
-        });
+      setFormData({
+        name: "",
+        age: "",
+        gender: "",
+        phone: "",
+        village: ""
+      });
     } catch (error) {
-        console.error(error);
+      console.error(error);
     }
-};
+  };
 
-return (
-  <div className="min-h-screen bg-gray-100 p-8">
-    <div className="max-w-6xl mx-auto">
+  return (
+    <div className="min-h-screen bg-slate-100 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl rounded-[32px] bg-white shadow-2xl shadow-slate-200/60 ring-1 ring-slate-200/80">
+        <div className="rounded-t-[32px] bg-gradient-to-r from-cyan-600 via-sky-600 to-indigo-600 px-8 py-10 text-white sm:px-12">
+          <p className="text-sm uppercase tracking-[0.35em] text-cyan-100/90">MediLink Health Camp</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight sm:text-5xl">Register patients quickly</h1>
+          <p className="mt-3 max-w-2xl text-slate-100/85 sm:text-lg">Register patients, generate QR links, and add them to the clinic queue.</p>
+        </div>
 
-      <h1 className="text-4xl font-bold text-center mb-8">
-        MediLink Health Camp
-      </h1>
+        <div className="px-6 pb-10 pt-8 sm:px-10">
+          <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+            <div className="rounded-[28px] border border-slate-200/80 bg-slate-50 p-6 shadow-sm shadow-slate-200/50">
+              <h2 className="text-2xl font-semibold text-slate-900">Register Patient</h2>
+              <p className="mt-2 text-sm text-slate-500">Enter patient details to create a new record.</p>
 
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <form onSubmit={handleSubmit} className="mt-6 grid gap-4 sm:grid-cols-2">
+                <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100" />
 
-        <h2 className="text-2xl font-semibold mb-4">
-          Register Patient
-        </h2>
+                <input type="number" name="age" placeholder="Age" value={formData.age} onChange={handleChange} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100" />
 
-        <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-5 gap-4"
-        >
-          <input
-            type="text"
-            name="name"
-            placeholder="Name"
-            value={formData.name}
-            onChange={handleChange}
-            className="border p-3 rounded-lg"
-          />
+                <input type="text" name="gender" placeholder="Gender" value={formData.gender} onChange={handleChange} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100" />
 
-          <input
-            type="number"
-            name="age"
-            placeholder="Age"
-            value={formData.age}
-            onChange={handleChange}
-            className="border p-3 rounded-lg"
-          />
+                <input type="text" name="phone" placeholder="Phone" value={formData.phone} onChange={handleChange} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100" />
 
-          <input
-            type="text"
-            name="gender"
-            placeholder="Gender"
-            value={formData.gender}
-            onChange={handleChange}
-            className="border p-3 rounded-lg"
-          />
+                <input type="text" name="village" placeholder="Village" value={formData.village} onChange={handleChange} className="w-full rounded-3xl border border-slate-300 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100" />
 
-          <input
-            type="text"
-            name="phone"
-            placeholder="Phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className="border p-3 rounded-lg"
-          />
-
-          <input
-            type="text"
-            name="village"
-            placeholder="Village"
-            value={formData.village}
-            onChange={handleChange}
-            className="border p-3 rounded-lg"
-          />
-
-          <button
-            type="submit"
-            className="bg-blue-600 text-white rounded-lg p-3 hover:bg-blue-700 md:col-span-5"
-          >
-            Register Patient
-          </button>
-        </form>
-
-      </div>
-
-      <h2 className="text-3xl font-bold mb-6">
-        Registered Patients
-      </h2>
-
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {patients.map((patient) => (
-          <div
-            key={patient._id}
-            className="bg-white rounded-xl shadow-md p-5"
-          >
-            <h3 className="text-xl font-bold mb-2">
-              {patient.name}
-            </h3>
-
-            <p>Age: {patient.age}</p>
-            <p>Gender: {patient.gender}</p>
-            <p>Phone: {patient.phone}</p>
-            <p>Village: {patient.village}</p>
-
-            <div className="mt-4 flex justify-center">
-              
-                <QRCodeCanvas
-                            value={`http://localhost:5173/patient/${patient._id}`}
-                    size={120}
-                    />
-              
+                <button type="submit" className="sm:col-span-2 inline-flex items-center justify-center rounded-full bg-cyan-600 px-6 py-3 text-base font-semibold text-white transition hover:bg-cyan-500">Register Patient</button>
+              </form>
             </div>
-               <button
-                onClick={() => handleAddToQueue(patient._id)}
-                disabled={queuedPatients.includes(patient._id)}
-                className={`mt-4 w-full p-2 rounded-lg text-white ${
-                    queuedPatients.includes(patient._id)
-                    ? "bg-gray-500"
-                    : "bg-green-600 hover:bg-green-700"
-                }`}
-                >
-                {queuedPatients.includes(patient._id)
-                    ? "Added ✓"
-                    : "Add To Queue"}
-                </button>
-                <button
-                onClick={() => handleDeletePatient(patient._id)}
-                className="mt-2 w-full bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
-                >
-                Delete Patient
-                </button>
-          </div>
-        ))}
 
+            <div className="rounded-[28px] border border-slate-200/80 bg-slate-50 p-6 shadow-sm shadow-slate-200/50">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-slate-900">Registered Patients</h2>
+                <span className="rounded-full bg-cyan-100 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-700">Live</span>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                {patients.map((patient) => (
+                  <div key={patient._id} className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/40">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">{patient.name}</h3>
+                        <p className="mt-1 text-sm text-slate-500">{patient.village} • Age {patient.age} • {patient.gender}</p>
+                      </div>
+                      <div className="flex flex-col items-center gap-3">
+                        <QRCodeCanvas value={`http://localhost:5173/patient/${patient._id}`} size={88} />
+                        <div className="text-sm text-slate-500">QR Link</div>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      <button onClick={() => handleAddToQueue(patient._id)} disabled={queuedPatients.includes(patient._id)} className={`rounded-full px-4 py-3 text-sm font-semibold text-white ${queuedPatients.includes(patient._id) ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-700'}`}>
+                        {queuedPatients.includes(patient._id) ? 'Added ✓' : 'Add To Queue'}
+                      </button>
+                      <button onClick={() => handleDeletePatient(patient._id)} className="rounded-full bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-700">Delete Patient</button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 
 }
 
