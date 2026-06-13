@@ -5,9 +5,11 @@ const router = express.Router();
 const {
 registerPatient,
 getPatients,
+ getPatientById,
 } = require("../controllers/patientController");
 
 router.post("/", registerPatient);
 router.get("/", getPatients);
+router.get("/:id", getPatientById);
 
 module.exports = router;

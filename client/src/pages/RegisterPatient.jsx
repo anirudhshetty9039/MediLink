@@ -150,10 +150,12 @@ return (
             <p>Village: {patient.village}</p>
 
             <div className="mt-4 flex justify-center">
-              <QRCodeCanvas
-                value={patient._id}
-                size={120}
-              />
+              
+                <QRCodeCanvas
+                            value={`http://localhost:5173/patient/${patient._id}`}
+                    size={120}
+                    />
+              
             </div>
           </div>
         ))}
