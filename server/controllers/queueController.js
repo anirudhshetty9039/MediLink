@@ -2,16 +2,31 @@ const Queue = require("../models/Queue");
 
 const addToQueue = async (req, res) => {
   try {
+    const { patientId } = req.body;
+
+    const existingQueue = await Queue.findOne({
+      patientId,
+      status: { $ne: "completed" },
+    });
+
+    if (existingQueue) {
+      return res.status(400).json({
+        message: "Patient already in queue",
+      });
+    }
+
     const count = await Queue.countDocuments();
 
     const queue = await Queue.create({
-      patientId: req.body.patientId,
+      patientId,
       tokenNumber: count + 1,
     });
 
     res.status(201).json(queue);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    });
   }
 };
 

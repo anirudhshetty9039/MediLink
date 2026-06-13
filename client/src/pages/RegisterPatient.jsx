@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import { registerPatient, getPatients } from "../services/patientService";
 import { addToQueue } from "../services/queueService";
+import { getQueue } from "../services/queueService";
 
 function RegisterPatient() {
 const [formData, setFormData] = useState({
@@ -14,6 +15,8 @@ village: ""
 
 
 const [patients, setPatients] = useState([]);
+const [queuedPatients, setQueuedPatients] = useState([]);
+
 
 const handleChange = (e) => {
     setFormData({
@@ -25,18 +28,35 @@ const handleAddToQueue = async (patientId) => {
   try {
     await addToQueue(patientId);
 
+    const queueData = await getQueue();
+
+    setQueuedPatients(
+      queueData.map((entry) => entry.patientId._id)
+    );
+
     alert("Patient added to queue");
+
   } catch (error) {
-    console.error(error);
+    alert(
+      error.response?.data?.message ||
+      "Something went wrong"
+    );
   }
 };
 const fetchPatients = async () => {
-    try {
-        const data = await getPatients();
-        setPatients(data);
-    } catch (error) {
-        console.error(error);
-    }
+  try {
+    const data = await getPatients();
+    setPatients(data);
+
+    const queueData = await getQueue();
+
+    setQueuedPatients(
+      queueData.map((entry) => entry.patientId._id)
+    );
+
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 useEffect(() => {
@@ -166,11 +186,18 @@ return (
                     />
               
             </div>
-            <button
+               <button
                 onClick={() => handleAddToQueue(patient._id)}
-                className="mt-4 w-full bg-green-600 text-white p-2 rounded-lg hover:bg-green-700"
+                disabled={queuedPatients.includes(patient._id)}
+                className={`mt-4 w-full p-2 rounded-lg text-white ${
+                    queuedPatients.includes(patient._id)
+                    ? "bg-gray-500"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
                 >
-                Add To Queue
+                {queuedPatients.includes(patient._id)
+                    ? "Added ✓"
+                    : "Add To Queue"}
                 </button>
           </div>
         ))}
