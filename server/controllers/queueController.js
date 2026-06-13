@@ -60,9 +60,23 @@ const updateQueueStatus = async (req, res) => {
     });
   }
 };
+const deleteQueueEntry = async (req, res) => {
+  try {
+    await Queue.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({
+      message: "Queue entry deleted",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
 module.exports = {
   addToQueue,
   getQueue,
   updateQueueStatus,
+    deleteQueueEntry
 };
 

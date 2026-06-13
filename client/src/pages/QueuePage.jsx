@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getQueue } from "../services/queueService";
 import { updateQueueStatus } from "../services/queueService";
+import { deleteQueueEntry } from "../services/queueService";
 
 function QueuePage() {
   const [queue, setQueue] = useState([]);
@@ -12,6 +13,18 @@ function QueuePage() {
 
     const data = await getQueue();
     setQueue(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+const handleDeleteQueue = async (id) => {
+  try {
+    await deleteQueueEntry(id);
+
+    const data = await getQueue();
+    setQueue(data);
+
+    alert("Queue entry deleted");
   } catch (error) {
     console.error(error);
   }
@@ -45,9 +58,9 @@ function QueuePage() {
               Token #{entry.tokenNumber}
             </h2>
 
-            <p>Name: {entry.patientId.name}</p>
-            <p>Age: {entry.patientId.age}</p>
-            <p>Village: {entry.patientId.village}</p>
+           <p>Name: {entry.patientId?.name || "Deleted Patient"}</p>
+            <p>Age: {entry.patientId?.age || "-"}</p>
+            <p>Village: {entry.patientId?.village || "-"}</p>
 
            <div className="mt-2">
   <span className="font-semibold">
@@ -79,6 +92,12 @@ function QueuePage() {
   >
     Complete
   </button>
+  <button
+  onClick={() => handleDeleteQueue(entry._id)}
+  className="bg-red-600 text-white px-3 py-2 rounded"
+>
+  Delete
+</button>
 </div>
           </div>
         ))}

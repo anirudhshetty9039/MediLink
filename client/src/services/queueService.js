@@ -23,3 +23,11 @@ export const updateQueueStatus = async (id, status) => {
 
   return response.data;
 };
+
+export const deleteQueueEntry = async (id) => {
+  const response = await axios.delete(
+    `http://localhost:5000/api/queue/${id}`
+  );
+
+  return response.data;
+};

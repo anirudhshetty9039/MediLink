@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { QRCodeCanvas } from "qrcode.react";
-import { registerPatient, getPatients } from "../services/patientService";
+import { registerPatient, getPatients, deletePatient } from "../services/patientService";
 import { addToQueue } from "../services/queueService";
 import { getQueue } from "../services/queueService";
 
@@ -41,6 +41,18 @@ const handleAddToQueue = async (patientId) => {
       error.response?.data?.message ||
       "Something went wrong"
     );
+  }
+};
+
+const handleDeletePatient = async (id) => {
+  try {
+    await deletePatient(id);
+
+    fetchPatients();
+
+    alert("Patient deleted");
+  } catch (error) {
+    console.error(error);
   }
 };
 const fetchPatients = async () => {
@@ -198,6 +210,12 @@ return (
                 {queuedPatients.includes(patient._id)
                     ? "Added ✓"
                     : "Add To Queue"}
+                </button>
+                <button
+                onClick={() => handleDeletePatient(patient._id)}
+                className="mt-2 w-full bg-red-600 text-white p-2 rounded-lg hover:bg-red-700"
+                >
+                Delete Patient
                 </button>
           </div>
         ))}

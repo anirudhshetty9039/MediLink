@@ -16,3 +16,11 @@ export const getPatientById = async (id) => {
   const response = await axios.get(`${API_URL}/${id}`);
   return response.data;
 };
+
+export const deletePatient = async (id) => {
+  const response = await axios.delete(
+    `http://localhost:5000/api/patients/${id}`
+  );
+
+  return response.data;
+};
